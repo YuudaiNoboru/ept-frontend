@@ -8,7 +8,9 @@ authors = [
     { name = "Flet developer", email = "you@example.com" }
 ]
 dependencies = [
-  "flet==0.27.6"
+  "flet==0.27.6",
+  "httpx>=0.28.1",
+  "ruff>=0.11.0",
 ]
 
 [tool.flet]
@@ -39,3 +41,14 @@ package-mode = false
 
 [tool.poetry.group.dev.dependencies]
 flet = {extras = ["all"], version = "0.27.6"}
+
+[tool.ruff]
+line-length = 79
+
+[tool.ruff.lint]
+preview = true
+select = ['I', 'F', 'E', 'W', 'PL', 'PT']
+
+[tool.ruff.format]
+preview = true
+quote-style = 'single'
