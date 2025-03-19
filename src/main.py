@@ -4,7 +4,8 @@ import flet as ft
 class SingIn:
     ...
 
-class SingUp(ft.Column):
+
+class ColumFormSingUp(ft.Column):
     def __init__(self):
         super().__init__()
         self.horizontal_alignment = ft.CrossAxisAlignment.CENTER
@@ -15,7 +16,7 @@ class SingUp(ft.Column):
         )
         self.input_email = ft.TextField(
             label='E-mail',
-            hint_text='Insira o seu nome',
+            hint_text='Insira o seu email',
             keyboard_type=ft.KeyboardType.EMAIL,
         )
         self.input_senha = ft.TextField(
@@ -24,8 +25,8 @@ class SingUp(ft.Column):
             password=True,
             can_reveal_password=True,
         )
-        self.input__senha_repitida = ft.TextField(
-            label='Nome',
+        self.input_senha_repitida = ft.TextField(
+            label='Senha',
             hint_text='Repita sua senha',
             password=True,
             can_reveal_password=True,
@@ -33,7 +34,7 @@ class SingUp(ft.Column):
         self.button_login = ft.OutlinedButton(
             text='Criar',
             style=ft.ButtonStyle(
-                padding=ft.padding.symmetric(vertical=25, horizontal=100)
+                padding=ft.padding.symmetric(vertical=25)
             ),
             expand=True,
             on_click=self.validar_form,
@@ -42,36 +43,38 @@ class SingUp(ft.Column):
             self.input_nome,
             self.input_email,
             self.input_senha,
-            self.input__senha_repitida,
+            self.input_senha_repitida,
             ft.Container(content=ft.Row(
                 controls=[self.button_login],
-            ), margin=ft.margin.only(top=80)),
+            ), margin=ft.margin.only(top=25)),
         ]
 
     def validar_form(self, e):
+        valid = True
+
         if len((self.input_nome.value.strip())) < 1:
+            valid = False
             self.input_nome.error_text = 'Você deve digitar um nome válido.'
-            self.update()
-            print(self.input_nome.error_text)
         else:
             self.input_nome.error_text = None
-            self.update()
+
+        self.update()
 
 
-class ContainerLogin(ft.Container):
+class ContainerFormSingUp(ft.Container):
     def __init__(self):
         super().__init__()
         self.margin = ft.margin.only(top=25)
-        self.content = SingUp()
+        self.content = ColumFormSingUp()
 
 
 class TabsBemVindo(ft.Tabs):
     def __init__(self):
         super().__init__()
-        self.selected_index = 2
+        self.selected_index = 1
         self.tabs = [
             ft.Tab(text='Entre'),
-            ft.Tab(text='Crie sua conta', content=ContainerLogin()),
+            ft.Tab(text='Crie sua conta', content=ContainerFormSingUp()),
         ]
 
 
@@ -82,7 +85,7 @@ class ContainerBemVindo(ft.Container):
         self.content = TabsBemVindo()
 
 
-class MainColumn(ft.Column):
+class ColumnMain(ft.Column):
     def __init__(self):
         super().__init__()
         self.horizontal_alignment = ft.CrossAxisAlignment.CENTER
@@ -99,12 +102,6 @@ class MainColumn(ft.Column):
         self.controls = [self.titulo, self.sub_titulo, ContainerBemVindo()]
 
 
-class MainContainer(ft.Container):
-    def __init__(self):
-        super().__init__()
-        self.content = MainColumn()
-
-
 def main(page: ft.Page):
     page.fonts = {'IndieFlower': '/fonts/IndieFlower-Regular.ttf'}
     page.theme = ft.Theme(
@@ -115,7 +112,7 @@ def main(page: ft.Page):
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
-    page.add(MainContainer())
+    page.add(ColumnMain())
 
 
 ft.app(main, assets_dir='assets')
