@@ -1,10 +1,14 @@
 import flet as ft
+
+from components.snack_bar_msg import SnackBarMsg
+from util.exception import APIError
 from util.validator import validator_form_new_user
 
 
-class ColumFormSingUp(ft.Column):
-    def __init__(self):
+class ColumnFormSignUp(ft.Column):
+    def __init__(self, callback_mudar_tab):
         super().__init__()
+        self.callback_mudar_tab = callback_mudar_tab
         self.expand = True
         self.horizontal_alignment = ft.CrossAxisAlignment.CENTER
         self.alignment = ft.MainAxisAlignment.START
@@ -23,7 +27,7 @@ class ColumFormSingUp(ft.Column):
             password=True,
             can_reveal_password=True,
         )
-        self.input_senha_repitida = ft.TextField(
+        self.input_senha_repetida = ft.TextField(
             label='Senha',
             hint_text='Repita sua senha',
             password=True,
@@ -39,7 +43,7 @@ class ColumFormSingUp(ft.Column):
             self.input_nome,
             self.input_email,
             self.input_senha,
-            self.input_senha_repitida,
+            self.input_senha_repetida,
             ft.Container(
                 content=ft.Row(
                     controls=[self.button_login],
@@ -49,15 +53,20 @@ class ColumFormSingUp(ft.Column):
         ]
 
     async def submit_form(self, e):
-        await validator_form_new_user(self, e)
+        try:
+            self.user = await validator_form_new_user(self, e)
+            if self.user:
+                self.callback_mudar_tab(0)
+        except APIError as err:
+            self.page.open(SnackBarMsg(err.message))
 
 
-class ContainerFormSingUp(ft.Container):
-    def __init__(self):
+class ContainerFormSignUp(ft.Container):
+    def __init__(self, callback_mudar_tab):
         super().__init__()
         self.margin = ft.margin.only(top=25)
         self.padding = ft.padding.symmetric(horizontal=20)
-        self.content = ColumFormSingUp()
+        self.content = ColumnFormSignUp(callback_mudar_tab)
 
 
 class TabsBemVindo(ft.Tabs):
@@ -66,8 +75,17 @@ class TabsBemVindo(ft.Tabs):
         self.selected_index = 1
         self.tabs = [
             ft.Tab(text='Entre'),
-            ft.Tab(text='Crie sua conta', content=ContainerFormSingUp()),
+            ft.Tab(
+                text='Crie sua conta',
+                content=ContainerFormSignUp(
+                    self.mudar_tab
+                ),
+            ),
         ]
+
+    def mudar_tab(self, index):
+        self.selected_index = index
+        self.page.update()
 
 
 class ColumnMain(ft.Column):

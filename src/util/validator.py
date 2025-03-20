@@ -28,17 +28,19 @@ async def validator_form_new_user(form, e):
         form.input_senha.error_text = 'A senha deve conter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e símbolos.'
     else:
         form.input_senha.error_text = None
-    if form.input_senha.value != form.input_senha_repitida.value:
+    if form.input_senha.value != form.input_senha_repetida.value:
         valid = False
-        form.input_senha_repitida.error_text = 'As senhas deven ser iguais.'
+        form.input_senha_repetida.error_text = 'As senhas deven ser iguais.'
     else:
-        form.input_senha_repitida.error_text = None
+        form.input_senha_repetida.error_text = None
 
     if valid:
-        await create_new_user(
+        user = await create_new_user(
             nome=form.input_nome.value,
             email=form.input_email.value,
             senha=form.input_senha.value,
         )
+
+        return user
 
     form.update()
