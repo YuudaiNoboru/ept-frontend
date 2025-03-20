@@ -1,9 +1,5 @@
-import re
-
 import flet as ft
-
-
-class SingIn: ...
+from util.validator import validator_form_new_user
 
 
 class ColumFormSingUp(ft.Column):
@@ -37,7 +33,7 @@ class ColumFormSingUp(ft.Column):
             text='Criar',
             style=ft.ButtonStyle(padding=ft.padding.symmetric(vertical=25)),
             expand=True,
-            on_click=self.validar_form,
+            on_click=self.submit_form,
         )
         self.controls = [
             self.input_nome,
@@ -52,40 +48,8 @@ class ColumFormSingUp(ft.Column):
             ),
         ]
 
-    def validar_form(self, e):
-        valid = True
-        email_patern = re.compile(
-            r'^[a-zA-Z0-9._-]+@[a-zA-Z0-9-]+\.[a-zA-Z.]{2,}$'
-        )
-        # Precisa ter pelo menos 1 letra minúscula, 1 letra maiúscula, 1 número, 1 caractere especial e 8 caracteres
-        password_patern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_\-#])[A-Za-z\d@$!%*?&_\-#]{8,}$'
-
-        if len((self.input_nome.value.strip())) < 1:
-            valid = False
-            self.input_nome.error_text = 'Você deve digitar um nome válido.'
-        else:
-            self.input_nome.error_text = None
-
-        if not email_patern.match(self.input_email.value or ''):
-            valid = False
-            self.input_email.error_text = 'Você deve digitar um email válido.'
-        else:
-            self.input_email.error_text = None
-
-        if not re.match(password_patern, self.input_senha.value):
-            valid = False
-            self.input_senha.error_text = 'A senha deve conter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e símbolos.'
-        else:
-            self.input_senha.error_text = None
-        if self.input_senha.value != self.input_senha_repitida.value:
-            valid = False
-            self.input_senha_repitida.error_text = (
-                'As senhas deven ser iguais.'
-            )
-        else:
-            self.input_senha_repitida.error_text = None
-
-        self.update()
+    async def submit_form(self, e):
+        await validator_form_new_user(self, e)
 
 
 class ContainerFormSingUp(ft.Container):
@@ -123,8 +87,14 @@ class ColumnMain(ft.Column):
             theme_style=ft.TextThemeStyle.TITLE_MEDIUM,
             text_align=ft.TextAlign.CENTER,
         )
-        self.controls = [self.titulo, self.sub_titulo, ft.Container(
-            margin=ft.margin.symmetric(vertical=20, horizontal=20), content=TabsBemVindo())]
+        self.controls = [
+            self.titulo,
+            self.sub_titulo,
+            ft.Container(
+                margin=ft.margin.symmetric(vertical=20, horizontal=20),
+                content=TabsBemVindo(),
+            ),
+        ]
 
 
 def main(page: ft.Page):
