@@ -14,7 +14,7 @@ class APIClient:
         """Autentica o usuário e armazena o token."""
         async with httpx.AsyncClient(base_url=self.base_url) as client:
             response = await client.post(
-                '/token',
+                'auth/token',
                 data={'username': username, 'password': password},
                 headers={'Content-Type': 'application/x-www-form-urlencoded'},
             )

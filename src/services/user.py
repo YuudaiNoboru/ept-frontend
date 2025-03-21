@@ -16,3 +16,12 @@ async def create_new_user(nome: str, email: str, senha: str):
     except HTTPStatusError as e:
         msg_error = e.response.json().get('detail')
         raise APIError(msg_error)
+
+
+async def login_user(email: str, senha: str):
+    try:
+        await client_api.authenticate(email, senha)
+        print(client_api.token)
+    except HTTPStatusError as e:
+        msg_error = e.response.json().get('detail')
+        raise APIError(msg_error)

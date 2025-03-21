@@ -1,72 +1,7 @@
 import flet as ft
 
-from components.snack_bar_msg import SnackBarMsg
-from util.exception import APIError
-from util.validator import validator_form_new_user
-
-
-class ColumnFormSignUp(ft.Column):
-    def __init__(self, callback_mudar_tab):
-        super().__init__()
-        self.callback_mudar_tab = callback_mudar_tab
-        self.expand = True
-        self.horizontal_alignment = ft.CrossAxisAlignment.CENTER
-        self.alignment = ft.MainAxisAlignment.START
-        self.spacing = 25
-        self.input_nome = ft.TextField(
-            label='Nome', hint_text='Insira o seu nome'
-        )
-        self.input_email = ft.TextField(
-            label='E-mail',
-            hint_text='Insira o seu email',
-            keyboard_type=ft.KeyboardType.EMAIL,
-        )
-        self.input_senha = ft.TextField(
-            label='Senha',
-            hint_text='Insira sua senha',
-            password=True,
-            can_reveal_password=True,
-        )
-        self.input_senha_repetida = ft.TextField(
-            label='Senha',
-            hint_text='Repita sua senha',
-            password=True,
-            can_reveal_password=True,
-        )
-        self.button_login = ft.OutlinedButton(
-            text='Criar',
-            style=ft.ButtonStyle(padding=ft.padding.symmetric(vertical=25)),
-            expand=True,
-            on_click=self.submit_form,
-        )
-        self.controls = [
-            self.input_nome,
-            self.input_email,
-            self.input_senha,
-            self.input_senha_repetida,
-            ft.Container(
-                content=ft.Row(
-                    controls=[self.button_login],
-                ),
-                margin=ft.margin.only(top=20),
-            ),
-        ]
-
-    async def submit_form(self, e):
-        try:
-            self.user = await validator_form_new_user(self, e)
-            if self.user:
-                self.callback_mudar_tab(0)
-        except APIError as err:
-            self.page.open(SnackBarMsg(err.message))
-
-
-class ContainerFormSignUp(ft.Container):
-    def __init__(self, callback_mudar_tab):
-        super().__init__()
-        self.margin = ft.margin.only(top=25)
-        self.padding = ft.padding.symmetric(horizontal=20)
-        self.content = ColumnFormSignUp(callback_mudar_tab)
+from components.column_form_login import ColumnFormLogin
+from components.column_form_new_user import ColumnFormSignUp
 
 
 class TabsBemVindo(ft.Tabs):
@@ -74,11 +9,22 @@ class TabsBemVindo(ft.Tabs):
         super().__init__()
         self.selected_index = 1
         self.tabs = [
-            ft.Tab(text='Entre'),
             ft.Tab(
+                icon=ft.Icons.LOGIN_OUTLINED,
+                text='Entre',
+                content=ft.Container(
+                    margin=ft.margin.only(top=25),
+                    padding=ft.padding.symmetric(horizontal=20),
+                    content=ColumnFormLogin(self.mudar_tab),
+                ),
+            ),
+            ft.Tab(
+                icon=ft.Icons.PERSON_ADD_OUTLINED,
                 text='Crie sua conta',
-                content=ContainerFormSignUp(
-                    self.mudar_tab
+                content=ft.Container(
+                    margin=ft.margin.only(top=25),
+                    padding=ft.padding.symmetric(horizontal=20),
+                    content=ColumnFormSignUp(self.mudar_tab),
                 ),
             ),
         ]
